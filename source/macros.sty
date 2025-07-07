@@ -1,0 +1,91 @@
+% Challenger, Attacker, Reduction and Meta-Reduction %
+\newcommand{\Challenger}{\mathcal{C}}
+\newcommand{\Attacker}{\mathcal{A}}
+\newcommand{\Reduction}{\mathcal{R}}
+\newcommand{\MetaReduction}{\mathcal{M}}
+\newcommand{\Forger}{\mathcal{F}}
+\newcommand{\Prover}{\mathcal{P}}
+\newcommand{\Verifier}{\mathcal{V}}
+
+% Times and advantages
+\newcommand{\TimeReduction}{t_{\Reduction}}
+\newcommand{\AdvantageReduction}{\varepsilon_{\Reduction}}
+
+% General values %
+\newcommand{\id}[1]{\mathsf{id}_{#1}}
+\newcommand{\msg}[1]{\mathsf{m}_{#1}}
+\newcommand{\Challenge}[1]{\textcolor{gray}{#1}}
+\newcommand{\Forge}[1]{\textcolor{magenta}{#1^{\star}}}
+\newcommand{\Signature}[1]{\textcolor{Sepia}{\sigma_{#1}}}
+\newcommand{\Counter}{l}
+\newcommand{\TargetId}[1]{\Hat{\id{#1}}}
+\newcommand{\Commitment}[1]{\textcolor{Plum}{#1}}
+
+% Mathematical operations %
+\newcommand{\Probability}[1]{\mathrm{Pr}\left[#1\right]}
+\newcommand{\RandomlyChosen}{\xleftarrow{\$}}
+
+% Sets, Groups and Fields %
+\newcommand{\Group}{\mathbb{G}}
+\newcommand{\Fp}{\mathbb{F}_{p}}
+\newcommand{\Fq}{\mathbb{F}_{q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\Zn}{\ZZ_{n}}
+\newcommand{\Znplus}{\Zn^{\ast}}
+\newcommand{\Zp}{\ZZ_{p}}
+\newcommand{\Zpplus}{\Zp^{\ast}}
+
+\newcommand{\Interval}[1]{\left[#1\right]}
+
+% Hash Functions and Oracles %
+\newcommand{\HashFunctionH}{\mathsf{H}}
+\newcommand{\HashFunctionG}{\mathsf{G}}
+\newcommand{\HashH}[1]{\mathsf{H}\left(#1\right)}
+\newcommand{\HashG}[1]{\mathsf{G}\left(#1\right)}
+\newcommand{\DirectOracle}{\Pi}
+\newcommand{\InverseOracle}{\Pi^{-1}}
+\newcommand{\SignatureOracle}{\mathsf{O}_{\mathsf{sig}}}
+\newcommand{\ExtractionOracle}{\mathsf{O}_{\mathsf{ext}}}
+\newcommand{\HashTable}[1]{\mathfrak{L}_{\mathsf{#1}}}
+\newcommand{\HashTableG}{\mathfrak{L}_{\mathsf{G}}}
+\newcommand{\HashTableH}{\mathfrak{L}_{\mathsf{H}}}
+\newcommand{\QueriesH}{q_{\mathsf{H}}}
+\newcommand{\QueriesG}{q_{\mathsf{G}}}
+\newcommand{\QueriesBRO}{q_{\Pi}}
+\newcommand{\Digest}[1]{\textcolor{cyan}{#1}}
+\newcommand{\ExtractionQueries}{q_{\mathsf{ext}}}
+\newcommand{\SignatureQueries}{q_{\mathsf{sig}}}
+
+% Nonces %
+\newcommand{\Nonce}[1]{\textcolor{PineGreen}{#1}}
+\newcommand{\InvNonce}[1]{\Nonce{#1}^{-1}}
+
+% Keys %
+\newcommand{\PrivKeyEC}[1]{\textcolor{red}{\left[#1\right]}}
+\newcommand{\PrivKey}[1]{\textcolor{red}{#1}}
+\newcommand{\PubKey}[1]{\textcolor{blue}{#1}}
+\newcommand{\mpk}{\textcolor{blue}{\mathsf{mpk}}}
+\newcommand{\msk}{\textcolor{red}{\mathsf{msk}}}
+\newcommand{\usk}{\mathsf{usk}}
+\newcommand{\sk}{\mathsf{sk}}
+
+
+% Elliptic Curve %
+\newcommand{\EllipticCurve}{E \left(\mathbb{F}_{q}\right)}
+\newcommand{\ProjFunction}[1]{f\left(#1\right)}
+\newcommand{\GeneratorEC}{\textcolor{BurntOrange}{G}}
+\newcommand{\Generator}[1]{\textcolor{BurntOrange}{#1}}
+\newcommand{\PointAtInfinity}{\mathcal{O}}
+
+% Schnorr %
+\newcommand{\GeneratorSchnorr}{\textcolor{BurntOrange}{g}}
+
+% Algorithms %
+\newcommand{\Setup}[1]{\mathsf{Setup}\left(#1\right)}
+\newcommand{\KeyDeriv}[1]{\mathsf{KeyDeriv}\left(#1\right)}
+\newcommand{\Sign}[1]{\mathsf{Sign}\left(#1\right)}
+\newcommand{\Verify}[1]{\mathsf{Verify}\left(#1\right)}
+\newcommand{\Finalize}[1]{\mathsf{Finalize}\left(#1\right)}
+
+% Strings %
+\newcommand{\BinaryStrings}[1]{\left\{0,1\right\}^{#1}}
