@@ -14,6 +14,6 @@ We use the following packages to run our proof of concept:
 We are using a common off-the-shelf equipment (Intel i7-6500U CPU @2.50GHz) to run the experiments.
 ## Running the code
 
-1. To compile the code, run gcc with flags ``-lssl -lcrypto``. We have added the binaries also, but no errors should appear.
+1. To compile the code, run gcc with flags ``-lssl -lcrypto``, i.e.,  ``gcc <code.c> -o <object_code> -lssl -lcrypto``.
 2. We make a total of $N = 10000$ experiments to obtain the numerical values presented in the article. The script  ``run.sh`` is responsible for running the compiled code $N$ times. You can run ``./run.sh <executable code> <csv file to save the results> <N>`` , e.g., ``./run.sh ibsecdsa ibsecdsa.csv 10000``.  Note that $N > 1$.
-3. Finally, run the Python3 script as follows: ``python3 <csv file> <scheme>``. As an example: ``python3 ibsecdsa.csv ibsecdsa``.
+3. Finally, to understand the execution of the Python3 script, run the following command: ``python3 analyse.py -h``. As an example: ``python3 analyse.py ibsecdsa.csv ibs``.
