@@ -11,9 +11,12 @@ We use the following packages to run our proof of concept:
 3. Python v3.13.2: scripts for performance analysis
 4. Numpy v2.2.4: numerical calculation
 5. CSV v1.0: csv file handling
+6. Valgrind v3.19.0: code profiling
+7. Massif-visualizer: for memory footprint analysis
 We are using a common off-the-shelf equipment (Intel i7-6500U CPU @2.50GHz) to run the experiments.
 ## Running the code
 
 1. To compile the code, run gcc with flags ``-lssl -lcrypto``, i.e.,  ``gcc <code.c> -o <object_code> -lssl -lcrypto``.
 2. We make a total of $N = 10000$ experiments to obtain the numerical values presented in the article. The script  ``run.sh`` is responsible for running the compiled code $N$ times. You can run ``./run.sh <executable code> <csv file to save the results> <N>`` , e.g., ``./run.sh ibsecdsa ibsecdsa.csv 10000``.  Note that $N > 1$.
 3. Finally, to understand the execution of the Python3 script, run the following command: ``python3 analyse.py -h``. As an example: ``python3 analyse.py ibsecdsa.csv ibs``.
+
