@@ -1,5 +1,6 @@
 #include <openssl/evp.h>
 #include <openssl/ec.h>
+#include <openssl/err.h>
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 #include <openssl/bn.h>
@@ -23,6 +24,25 @@ EC_KEY* generate_ecdsa_key() {
     }
 
     return key;
+}
+
+void handle_errors(){
+    ERR_print_errors_fp(stderr);
+    abort();
+}
+
+EVP_PKEY* keygen(int nid){
+    EVP_PKEY *pkey = NULL;
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
+
+    if (!ctx || EVP_PKEY_keygen_init(ctx) <= 0) handle_errors();
+  
+    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid) <= 0) handle_errors();
+  
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0) handle_errors();
+    
+    EVP_PKEY_CTX_free(ctx);
+    return pkey;
 }
 
 int ecdsa_sign_extract_rs(const EC_KEY *key, const unsigned char *msg, size_t msg_len, BIGNUM **r, BIGNUM **s) {
@@ -59,6 +79,41 @@ int ecdsa_sign_extract_rs(const EC_KEY *key, const unsigned char *msg, size_t ms
     return 1;
 }
 
+int keyextract(const EVP_PKEY *pkey, const unsigned char *id, size_t id_len, BIGNUM **t_id, BIGNUM **u){
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha_ctx;
+
+    SHA256_Init(&sha_ctx);
+    SHA256_Update(&sha_ctx, id, id_len);
+    SHA256_Final(hash, &sha_ctx);
+
+    ECDSA_SIG *user_sk = ECDSA_do_sign(hash, SHA256_DIGEST_LENGTH, (EC_KEY)pkey);
+    if(!user_sk){
+        fprintf(stderr, "Failed to generate ECDSA signatures\n");
+        return 0;
+    }
+
+    const BIGNUM *sig_t_id, *sig_u;
+    ECDSA_SIG_get0(user_sk, &sig_t_id, &sig_u);
+    if (!sig_t_id || !sig_u) {
+        fprintf(stderr, "Failed to extract r and s from ECDSA signature\n");
+        ECDSA_SIG_free(user_sk);
+        return 0;
+    }
+
+    *t_id = BN_dup(sig_t_id);
+    *u = BN_dup(sig_u);
+    if (!*t_id || !*u) {
+        fprintf(stderr, "Failed to allocate memory for t_{id} and u\n");
+        ECDSA_SIG_free(user_sk);
+        return 0;
+    }
+
+    ECDSA_SIG_free(user_sk);
+    return 1;
+}
+
+
 int ecdsa_sign_second_message(const EC_KEY *key, const BIGNUM *s_priv_key, const unsigned char *msg1, size_t msg1_len, const unsigned char *msg2, size_t msg2_len, BIGNUM **t, BIGNUM **s_new, const BIGNUM *r1) {
     int ret = 0;
     unsigned char *combined_msg = NULL;
@@ -78,6 +133,24 @@ err:
     return ret;
 }
 
+int sign(const EVP_PKEY *pkey, const BIGNUM *u, const unsigned char *user_id, size_t user_id_len, const unsigned char *msg, size_t msg_len, BIGNUM **t_id, BIGNUM **s, BIGNUM **t){
+    int ret = 0;
+    unsigned char *combined_msg = NULL;
+    size_t combined_msg_len = user_id_len + msg_len;
+    combined_msg = malloc(combined_msg_len);
+    
+    if(!combined_msg) goto err;
+    memcpy(combined_msg, user_id, user_id_len);
+    memcpy(combined_msg + user_id_len, msg, msg_len);
+    
+    if(!keyextract(pkey, combined_msg, combined_msg_len, t, s)) goto err;
+    
+    ret = 1;
+    err:
+      if(combined_msg) free(combined_msg);
+      return ret;
+}
+
 void print_bignum(const char *label, const BIGNUM *bn) {
     printf("%s: ", label);
     BN_print_fp(stdout, bn);
@@ -90,15 +163,16 @@ int main() {
 
     OpenSSL_add_all_algorithms();
 
-	ts = clock();
-    EC_KEY *key = generate_ecdsa_key();
+	  ts = clock();
+    //EC_KEY *key = generate_ecdsa_key();
+    EVP_PKEY *key = keygen(NID_secp256k1);
     if (!key) {
         fprintf(stderr, "Failed to generate ECDSA key pair\n");
         return 1;
     }
 	
     ts = clock() - ts;
-	elapsed = ((double) ts)/CLOCKS_PER_SEC;
+	  elapsed = ((double) ts)/CLOCKS_PER_SEC;
     printf("%f", elapsed);
     
     const char *msg1 = "Original message";
@@ -107,37 +181,38 @@ int main() {
     ts = clock();
 
     BIGNUM *r1 = NULL, *s1 = NULL;
-    if (!ecdsa_sign_extract_rs(key, (const unsigned char *)msg1, msg1_len, &r1, &s1)) {
+    //if (!ecdsa_sign_extract_rs(key, (const unsigned char *)msg1, msg1_len, &r1, &s1)) {
+    if (!keyextract(key, (const unsigned char *)msg1, msg1_len, &r1, &s1)) {
         fprintf(stderr, "Failed to sign first message\n");
-        EC_KEY_free(key);
+        EVP_PKEY_free(key);
         return 1;
     }
-
-	ts = clock() - ts;
-	elapsed = ((double) ts)/CLOCKS_PER_SEC;
-	printf(",%f", elapsed);
+  	ts = clock() - ts;
+  	elapsed = ((double) ts)/CLOCKS_PER_SEC;
+	  printf(",%f", elapsed);
 
     const char *msg2 = "New message";
     size_t msg2_len = strlen(msg2);
 
     ts = clock();
     BIGNUM *t = NULL, *s_new = NULL;
-    if (!ecdsa_sign_second_message(key, s1, (const unsigned char *)msg1, msg1_len, (const unsigned char *)msg2, msg2_len, &t, &s_new, r1)) {
+    //if (!ecdsa_sign_second_message(key, s1, (const unsigned char *)msg1, msg1_len, (const unsigned char *)msg2, msg2_len, &t, &s_new, r1)) {
+    if (!sign(key, s1, (const unsigned char *)msg1, msg1_len, (const unsigned char *)msg2, msg2_len, &t, &s_new, &r1)) {
         fprintf(stderr, "Failed to sign second message\n");
         BN_free(r1);
         BN_free(s1);
-        EC_KEY_free(key);
+        EVP_PKEY_free(key);
         return 1;
     }
-	ts = clock() - ts;
-	elapsed = ((double) ts)/CLOCKS_PER_SEC;
-	printf(",%f\n", elapsed);
+  	ts = clock() - ts;
+	  elapsed = ((double) ts)/CLOCKS_PER_SEC;
+	  printf(",%f\n", elapsed);
 
     BN_free(r1);
     BN_free(s1);
     BN_free(t);
     BN_free(s_new);
-    EC_KEY_free(key);
+    EVP_PKEY_free(key);
     EVP_cleanup();
 
     return 0;
