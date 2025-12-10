@@ -1,10 +1,10 @@
-#include <openssl/evp.h>
+#include <openssl/bn.h>
 #include <openssl/ec.h>
+#include <openssl/ecdsa.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <openssl/rand.h>
-#include <openssl/bn.h>
-#include <openssl/ecdsa.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,18 +26,29 @@ EC_KEY* generate_ecdsa_key() {
     return key;
 }
 
+/*
+ *
+ */
+
 void handle_errors(){
     ERR_print_errors_fp(stderr);
     abort();
 }
 
-EVP_PKEY* keygen(int nid){
+/*
+ * KeyGen algorithm
+ * Given a curve with associated security parameter,
+ * outputs the key pair.
+ * Input: safe elliptic curve (int)
+ * Output: master key pair (EVP_PKEY)
+ */
+EVP_PKEY* keygen(int curve){
     EVP_PKEY *pkey = NULL;
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
 
     if (!ctx || EVP_PKEY_keygen_init(ctx) <= 0) handle_errors();
   
-    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, nid) <= 0) handle_errors();
+    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, curve) <= 0) handle_errors();
   
     if (EVP_PKEY_keygen(ctx, &pkey) <= 0) handle_errors();
     
@@ -79,6 +90,15 @@ int ecdsa_sign_extract_rs(const EC_KEY *key, const unsigned char *msg, size_t ms
     return 1;
 }
 
+/*
+ * KeyExtract (or KeyDeriv algorithm)
+ * Given a master secret key and an id,
+ * outputs the ECDSA signature that will be 
+ * used as user's secret key.
+ * Input: master key pair (EVP_PKEY), id (const unsigned char*),
+ * id_len (size_t), t_id (BIGNUM**), u (BIGNUM**)
+ * Output: user's secret key (t_id, u)
+ */
 int keyextract(const EVP_PKEY *pkey, const unsigned char *id, size_t id_len, BIGNUM **t_id, BIGNUM **u){
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha_ctx;
@@ -133,6 +153,13 @@ err:
     return ret;
 }
 
+/*
+ * Signing algorithm
+ * Given a message, an identifier, and the user's secret key,
+ * outputs the signature over message||id.
+ * Input:
+ * Output:
+ */
 int sign(const EVP_PKEY *pkey, const BIGNUM *u, const unsigned char *user_id, size_t user_id_len, const unsigned char *msg, size_t msg_len, BIGNUM **t_id, BIGNUM **s, BIGNUM **t){
     int ret = 0;
     unsigned char *combined_msg = NULL;
