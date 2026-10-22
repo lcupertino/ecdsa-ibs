@@ -1,8 +1,8 @@
-# On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios
+# On the use of ECDSA with hierarchical public key delegation in identity-based scenarios
 
-> Lucas C. Cardoso and Marcos A. Simplicio Jr. IACR Communications in Cryptology, 2026, Issue 3.
+> Lucas C. Cardoso and Marcos A. Simplicio Jr. IACR Communications in Cryptology 2026, Issue 3.
 
-**Abstract**. This repository contains the code associated with our paper "On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios", submitted to the IACR Communications in Cryptology. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
+**Abstract**. This repository contains the code associated with our paper "On the use of ECDSA with hierarchical public key delegation in identity-based scenarios", IACR Communications in Cryptology 2026, Issue 3. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
 
 ## Directories
 
@@ -38,8 +38,6 @@ Each directory is described as follows:
 
 1. src/: source code for the complete proof of concept.
 2. src/experiments: .csv files for each benchmark.
-
-**Abstract**. This repository contains the code associated with our paper "On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios", published at the IACR Communications in Cryptology, 2026, Issue 3. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
 
 ## Requirements
 
@@ -84,6 +82,6 @@ As we discuss in the manuscript, using the ``-O3`` flag with the gcc compiler do
     make run_bench
 ```
 
-We make a total of $N = 10000$ experiments, being $10\%$ dedicated to warm-up, to obtain the numerical values presented in the article.
+We make a total of $N = 10000$ experiments, being $10\\%$ dedicated to warm-up, to obtain the numerical values presented in the article.
 
 1. Finally, to extract the statistics of the produced .csv file containing the NIST safe elliptic curve and the scheme, use the Python3 script and run the following command: ``python3 analyse.py -h``. Do not forget to create a python environment and install both ``numpy`` and ``csv``. The command template is as follows: ``python3 analyse.py <path to .csv file> <considered scheme: ds or ibs>``. We consider the ``brainpoolPXr1``, with $X \in \{224, 256, 320, 384, 512\}$, ``secpXr1``, with $X \in \{224, 384, 521\}$, and bitcoin curve ``secp256k1`` to conduct our experiments for the sake of completeness. In the paper, however, we consider only the ``secp`` curves with security levels $\lambda \in \{128, 192, 256\}$.
