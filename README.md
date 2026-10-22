@@ -1,7 +1,8 @@
 # On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios
 
-> Submitted to the IACR Communications in Cryptology (CiC), 2025.
+> Lucas C. Cardoso and Marcos A. Simplicio Jr. IACR Communications in Cryptology, 2026, Issue 3.
 
+<<<<<<< HEAD
 **Abstract**. This repository contains the code associated with our paper "On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios", submitted to the IACR Communications in Cryptology. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
 
 ## Directories
@@ -36,6 +37,9 @@ Each directory is described as follows:
 1. src/: source code for the complete proof of concept.
 2. src/experiments: .csv files for each benchmark.
 
+=======
+**Abstract**. This repository contains the code associated with our paper "On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios", published at the IACR Communications in Cryptology, 2026, Issue 3. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
+>>>>>>> 28984f1d55d74773e2049639487394c3aca0c82d
 ## Requirements
 
 We use the following packages to run our proof of concept:
