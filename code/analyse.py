@@ -9,19 +9,22 @@ def analyse(file_path, scheme):
         list_of_algorithms = ['KeyGen', 'Sign', 'Verify']
 
     if scheme == "ibs":
-        list_of_algorithms = ['Setup', 'KeyExtract', 'Sign']
+        list_of_algorithms = ['Setup', 'KeyExtract', 'Sign', 'Verify']
     
     try:
-        column_data = [[], [], []]
+        if scheme == "ds":
+            column_data = [[], [], []]
+        elif scheme == "ibs":
+            column_data = [[], [], [], []]
 
         with open(file_path, 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
             for i, row in enumerate(reader):
-                if len(row) != 3:
+                if len(row) != len(column_data):
                     print(f"Error: Row {i+1} does not have exactly 3 columns. Skipping row.", file=sys.stderr)
                     continue
                 try:
-                    for col_idx in range(3):
+                    for col_idx in range(len(column_data)):
                         column_data[col_idx].append(float(row[col_idx]))
                 except ValueError:
                     print(f"Error: Non-numeric data found in row {i+1}. Skipping row.", file=sys.stderr)
@@ -37,14 +40,21 @@ def analyse(file_path, scheme):
                 continue
 
             np_data = np.array(data)
-
             average = np.mean(np_data)
             std_dev = np.std(np_data)
 
+        if (std_dev <= 0.1 * average):
             print(f"--- {list_of_algorithms[col_idx]} ---")
             print(f"Average: {average:.8f}")
             print(f"Standard Deviation: {std_dev:.8f}")
             print("-" * 20)
+
+        else:
+            median = np.median(np_data)
+            print(f"--- {list_of_algorithms[col_idx]} ---")
+            print(f"Average: {median:.8f}")
+            print("-" * 20)
+            
 
     except FileNotFoundError:
         print(f"Error: The file '{file_path}' was not found.", file=sys.stderr)

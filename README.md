@@ -3,6 +3,39 @@
 > Submitted to the IACR Communications in Cryptology (CiC), 2025.
 
 **Abstract**. This repository contains the code associated with our paper "On the Use of ECDSA with Hierarchical Public Key Delegation in Identity-based Scenarios", submitted to the IACR Communications in Cryptology. Our implementation contains 3 main components: (i) the LaTeX source code with the authorship anonymized, (ii) the implementation of the schemes discussed in the paper with OpenSSL, and (iii) a Python script to analyze the results.
+
+## Directories
+```
+.
+├── README.md
+├── src
+│   ├── Makefile
+│   ├── analyse.py
+│   ├── common.c
+│   ├── common.h
+│   ├── common.o
+│   ├── ecdsa.c
+│   ├── experiments
+│   ├── ibsecdsa.c
+│   ├── ibsecdsa.h
+│   ├── ibsecdsa.o
+│   ├── ibsecdsav1.c
+│   ├── ibsecdsav2.c
+│   ├── ibsecdsav3.c
+│   ├── ibsschnorr.c
+│   ├── ibsschnorr.h
+│   ├── ibsschnorr.o
+│   ├── main-ecdsa.c
+│   ├── main-schnorr.c
+│   ├── schnorr.c
+│   ├── utils.c
+│   ├── utils.h
+│   └── utils.o
+```
+Each directory is described as follows:
+1. src/: source code for the complete proof of concept.
+2. src/experiments: .csv files for each benchmark.
+
 ## Requirements
 
 We use the following packages to run our proof of concept:
@@ -11,12 +44,33 @@ We use the following packages to run our proof of concept:
 3. Python v3.13.2: scripts for performance analysis
 4. Numpy v2.2.4: numerical calculation
 5. CSV v1.0: csv file handling
-6. Valgrind v3.19.0: code profiling
-7. Massif-visualizer: for memory footprint analysis
 We are using a common off-the-shelf equipment (Intel i7-6500U CPU @2.50GHz) to run the experiments.
+
 ## Running the code
 
-1. To compile the code, run gcc with flags ``-lssl -lcrypto``, i.e.,  ``gcc <code.c> -o <object_code> -lssl -lcrypto``.
-2. We make a total of $N = 10000$ experiments to obtain the numerical values presented in the article. The script  ``run.sh`` is responsible for running the compiled code $N$ times. You can run ``./run.sh <executable code> <csv file to save the results> <N>`` , e.g., ``./run.sh ibsecdsa ibsecdsa.csv 10000``.  Note that $N > 1$.
-3. Finally, to understand the execution of the Python3 script, run the following command: ``python3 analyse.py -h``. As an example: ``python3 analyse.py ibsecdsa.csv ibs``.
+We store the .csv files containing the results of each scheme inside the ``experiments/`` directory.
+If no directory with this name exists, then the first step is not necessary and you can jump to the 
+``make libraries && make all`` instructions. The step-by-step is written as follows:
+1. To run the C code, run the following command:
+```
+    make clean
+```
+Followed by:
+```
+    make libraries && make all
+```
+
+If it is desired to analyse the ``-O3`` variant of the code, run 
+```
+    make optimized
+```
+As we discuss in the manuscript, using the ``-O3`` flag with the gcc compiler does not significantly alter the obtained results (which are done with the ``-O2``).
+
+2. Then, run each benchmark with 
+```
+    make run_bench
+```
+We make a total of $N = 10000$ experiments, being $10\%$ dedicated to warm-up, to obtain the numerical values presented in the article. 
+
+3. Finally, to extract the statistics of the produced .csv file containing the NIST safe elliptic curve and the scheme, use the Python3 script and run the following command: ``python3 analyse.py -h``. Do not forget to create a python environment and install both ``numpy`` and ``csv``. The command template is as follows: ``python3 analyse.py <path to .csv file> <considered scheme: ds or ibs>``. We consider the ``brainpoolPXr1``, with $X \in \{224, 256, 320, 384, 512\}$, ``secpXr1``, with $X \in \{224, 384, 521\}$, and bitcoin curve ``secp256k1`` to conduct our experiments for the sake of completeness. In the paper, however, we consider only the ``secp`` curves with security levels $\lambda \in \{128, 192, 256\}$.
 
